@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework'
+    'rest_framework',
     'api.apps.ApiConfig',
 ]
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:5173']
@@ -52,6 +52,14 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'infoCrawler.urls'
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
 
 TEMPLATES = [
     {
