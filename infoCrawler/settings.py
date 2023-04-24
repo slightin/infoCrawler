@@ -58,7 +58,9 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS':  'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20  # 每页数目
 }
 
 TEMPLATES = [
@@ -95,6 +97,7 @@ DATABASES = {
         'OPTIONS': {'charset':'utf8mb4'},
         'TEST_CHARSET': 'utf8mb4',
         'TEST_COLLATION': 'utf8mb4_general_ci',
+        'TIME_ZONE': 'Asia/Shanghai'
     }
 }
 

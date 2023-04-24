@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.viewsets import ModelViewSet
 from .serializers import *
-from .crawler import livenews
+from .crawler import livenews,hotnews
 from .models import *
 
 
@@ -14,6 +14,8 @@ def update(request):
     category = request.POST.get('category')
     if category == "livenews":
         livenews.lCrawl()
+    elif category == 'hotnews':
+        hotnews.weibo()
     return HttpResponse("sucess")
 
 
@@ -25,5 +27,5 @@ def update(request):
 #         return JsonResponse(data, json_dumps_params={'ensure_ascii': False})
 
 class livenewsViewSet(ModelViewSet):
-    queryset = liveNews.objects.all()
-    serializer_class = livenewslistSerializer
+    queryset = liveNews.objects.all().order_by('-pub_time')
+    serializer_class = livenewsSerializer
