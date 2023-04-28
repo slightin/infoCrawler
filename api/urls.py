@@ -7,6 +7,7 @@ app_name = "api"
 
 router = DefaultRouter()
 router.register('livenews', views.livenewsViewSet)
+router.register('hotnews', views.hotnewsViewSet)
 urlpatterns = [
     path('update', views.update, name='update'),
     path('', include(router.urls))

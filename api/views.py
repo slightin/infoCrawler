@@ -1,11 +1,14 @@
 import json
+
 from django.core import serializers
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django_filters import rest_framework
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.viewsets import ModelViewSet
 from .serializers import *
-from .crawler import livenews,hotnews
+from .filters import *
+from .crawler import livenews, hotnews
 from .models import *
 
 
@@ -15,7 +18,7 @@ def update(request):
     if category == "livenews":
         livenews.lCrawl()
     elif category == 'hotnews':
-        hotnews.weibo()
+        hotnews.gethot()
     return HttpResponse("sucess")
 
 
@@ -29,3 +32,11 @@ def update(request):
 class livenewsViewSet(ModelViewSet):
     queryset = liveNews.objects.all().order_by('-pub_time')
     serializer_class = livenewsSerializer
+
+
+class hotnewsViewSet(ModelViewSet):
+    queryset = hotNews.objects.all().order_by('rank')
+    serializer_class = hotnewsSerializer
+    filterset_class = hotnewsFilter
+    pagination_class = None
+
