@@ -33,3 +33,10 @@ class livenewsSerializer(DynamicFieldsModelSerializer):
         model = liveNews
         fields = '__all__'
         list_fields = ('id', 'news_title', 'pub_time')
+
+
+class hotnewsSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = hotNews
+        fields = '__all__'
+        # list_fields = fields

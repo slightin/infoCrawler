@@ -16,6 +16,23 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 class CrawlerTests(TestCase):
+    def testzhihu(self):
+
+        content = crawl("https://www.zhihu.com/billboard")
+        soup = BeautifulSoup(content, "html.parser")
+        hot_data = soup.find('script', id='js-initialData').string
+        print(hot_data)
+        hot_json = json.loads(hot_data)
+        for index, item in enumerate(hot_json['initialState']['topstory']['hotList'],start=1):
+            print(index)
+            print(item['target']['titleArea']['text'])
+
+        # for em in soup.find_all(name="a", attrs={"class": "HotList-item"}):
+        #     print(em)
+        #     print(em.find(attrs={"class": "HotList-itemIndex"}).get_text())
+        #     print(em.find(attrs={"class": "HotList-itemTitle"}).get_text())
+        #     # print(em.get('data-za-extra-module'))
+
     def testlivenews_pc(self):
         content = crawl(baseurl + "/newsflashes/catalog/0")
         soup = BeautifulSoup(content, "html.parser")
@@ -70,16 +87,16 @@ class CrawlerTests(TestCase):
         #     print(linktag.get('href'))
 
     def testselenium(self):
-        driver=webdriver.Edge(driver_path)
+        driver = webdriver.Edge(driver_path)
         driver.implicitly_wait(10)
         driver.get('https://s.weibo.com/top/summary?cate=realtimehot')
-        hotlist=driver.find_elements(By.CSS_SELECTOR, "td.ranktop")
+        hotlist = driver.find_elements(By.CSS_SELECTOR, "td.ranktop")
         for item in hotlist:
             if item.text.isdigit():
-                atag=item.find_element(By.XPATH, './following-sibling::td[1]/a')
-                spantag=item.find_element(By.XPATH, './following-sibling::td[1]/span')
+                atag = item.find_element(By.XPATH, './following-sibling::td[1]/a')
+                spantag = item.find_element(By.XPATH, './following-sibling::td[1]/span')
                 print(atag.text)
-                print(re.search(r'\d+',spantag.text).group())
+                print(re.search(r'\d+', spantag.text).group())
                 # print(contag.get_attribute('href'))
 
         print(hotlist)
