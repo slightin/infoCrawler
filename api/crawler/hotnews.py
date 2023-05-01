@@ -9,7 +9,9 @@ from ..models import hotNews
 from django.db import connection
 from ..cloud import generate_wordcloud
 
-cloudtext=''
+cloudtext = ''
+
+
 def browse():
     global cloudtext
     driver = webdriver.Edge(driver_path)
@@ -24,7 +26,7 @@ def browse():
             hot.src = 'weibo'
             hot.rank = item.text
             hot.title = atag.text
-            cloudtext += atag.text
+            cloudtext += '' + atag.text
             hot.link = atag.get_attribute('href')
             hot.hot = re.search(r'\d+', spantag.text).group()
             hot.save()
@@ -41,7 +43,7 @@ def zhihu():
         hot.rank = index
         title = item['target']['titleArea']['text']
         hot.title = title
-        cloudtext += title
+        cloudtext += '' + title
         hot.src = "zhihu"
         r = re.search(r'\d+', item['target']['metricsArea']['text'])
         if r is None:
@@ -49,6 +51,21 @@ def zhihu():
         else:
             hot.hot = r.group() + '0000'
         hot.link = item['target']['link']['url']
+        hot.save()
+
+
+def baidu():
+    global cloudtext
+    soup = BeautifulSoup(crawl('https://top.baidu.com/board?tab=realtime'), 'html.parser')
+    for index, item in enumerate(soup.find_all(attrs={"class": "category-wrap_iQLoo horizontal_1eKyQ"}), start=1):
+        hot = hotNews()
+        hot.rank = index
+        hot.src = "baidu"
+        hot.hot = (item.find(attrs={"class": "hot-index_1Bl1a"}).get_text())
+        title = (item.find(attrs={"class": "c-single-text-ellipsis"}).get_text())
+        cloudtext += '' + title
+        hot.title = title
+        hot.link = (item.find('a').get('href'))
         hot.save()
 
 
@@ -64,4 +81,5 @@ def gethot():
 
     browse()
     zhihu()
-    generate_wordcloud(cloudtext)
+    baidu()
+    generate_wordcloud(cloudtext, 'hot')
