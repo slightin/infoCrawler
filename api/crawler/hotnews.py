@@ -7,9 +7,11 @@ import re
 from . import driver_path, crawl
 from ..models import hotNews
 from django.db import connection
+from ..cloud import generate_wordcloud
 
-
+cloudtext=''
 def browse():
+    global cloudtext
     driver = webdriver.Edge(driver_path)
     driver.implicitly_wait(10)
     driver.get('https://s.weibo.com/top/summary?cate=realtimehot')
@@ -22,12 +24,14 @@ def browse():
             hot.src = 'weibo'
             hot.rank = item.text
             hot.title = atag.text
+            cloudtext += atag.text
             hot.link = atag.get_attribute('href')
             hot.hot = re.search(r'\d+', spantag.text).group()
             hot.save()
 
 
 def zhihu():
+    global cloudtext
     content = crawl("https://www.zhihu.com/billboard")
     soup = BeautifulSoup(content, "html.parser")
     hot_data = soup.find('script', id='js-initialData').string
@@ -35,9 +39,15 @@ def zhihu():
     for index, item in enumerate(hot_json['initialState']['topstory']['hotList'], start=1):
         hot = hotNews()
         hot.rank = index
-        hot.title = item['target']['titleArea']['text']
+        title = item['target']['titleArea']['text']
+        hot.title = title
+        cloudtext += title
         hot.src = "zhihu"
-        hot.hot = re.search(r'\d+', item['target']['metricsArea']['text']).group()*1E4
+        r = re.search(r'\d+', item['target']['metricsArea']['text'])
+        if r is None:
+            hot.hot = 0
+        else:
+            hot.hot = r.group() + '0000'
         hot.link = item['target']['link']['url']
         hot.save()
 
@@ -54,3 +64,4 @@ def gethot():
 
     browse()
     zhihu()
+    generate_wordcloud(cloudtext)

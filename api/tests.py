@@ -11,11 +11,16 @@ from .crawler.livenews import baseurl, murl
 from .models import liveNews
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from .cloud import generate_wordcloud
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
 class CrawlerTests(TestCase):
+    def test36hot(self):
+        soup=BeautifulSoup(crawl('https://m.36kr.com/hot-list-m'), 'html.parser')
+        hot_data = soup.find_all()
+
     def testzhihu(self):
 
         content = crawl("https://www.zhihu.com/billboard")
@@ -101,3 +106,7 @@ class CrawlerTests(TestCase):
 
         print(hotlist)
         # time.sleep(5)
+
+class WordcloudTests(TestCase):
+    def testcloud(self):
+        generate_wordcloud('在网上找到一张白色背景的图片下载到当前文件夹，作为词云的背景图（若不指定图片，则默认生成矩形词云）')
