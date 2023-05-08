@@ -8,8 +8,10 @@ app_name = "api"
 router = DefaultRouter()
 router.register('livenews', views.livenewsViewSet)
 router.register('hotnews', views.hotnewsViewSet)
+router.register('maininfo', views.mainnewsViewSet)
 urlpatterns = [
     path('update', views.update, name='update'),
+    path('wordcloud/<str:iname>', views.showcloudimage, name='wordcloud'),
     path('', include(router.urls))
     # path('get/<str:category>', views.getinfo, name='get')
 ]

@@ -40,3 +40,11 @@ class hotnewsSerializer(DynamicFieldsModelSerializer):
         model = hotNews
         fields = '__all__'
         # list_fields = fields
+
+
+class mainnewsSerializer(DynamicFieldsModelSerializer):
+    pub_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M')
+    class Meta:
+        model = mainNews
+        fields = '__all__'
+        list_fields = ('id', 'title', 'imageurl', 'pub_time', 'cate', 'intro')
