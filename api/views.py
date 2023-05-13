@@ -56,3 +56,8 @@ class mainnewsViewSet(ModelViewSet):
     queryset = mainNews.objects.all().order_by('-pub_time')
     serializer_class = mainnewsSerializer
     filterset_class = mainnewsFilter
+
+class cateViewSet(ModelViewSet):
+    queryset = category.objects.all().order_by('id')
+    serializer_class = categorySerializer
+    pagination_class = None

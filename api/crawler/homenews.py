@@ -20,9 +20,9 @@ def crawl_netease(url, imageurl, cate):
         timeinfo = soup.find(attrs={'class': 'post_info'}).get_text()
         time = re.search(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}', timeinfo).group()
         pubtime = datetime.datetime.strptime(time, '%Y-%m-%d %H:%M')
-        # if pubtime <= lasttime:
-        #     return True
-        # print(soup)
+        if pubtime <= lasttime:
+            return True
+        print(soup)
         info = mainNews()
         info.imageurl = imageurl
         info.title = soup.find(attrs={'class': 'post_title'}).get_text()

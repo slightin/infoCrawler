@@ -9,6 +9,7 @@ class hotnewsFilter(django_filters.FilterSet):
 
 
 class mainnewsFilter(django_filters.FilterSet):
+    title = django_filters.CharFilter(field_name='title', lookup_expr="icontains")
     class Meta:
         model = mainNews
-        fields = ('cate',)
+        fields = ('cate', 'title')

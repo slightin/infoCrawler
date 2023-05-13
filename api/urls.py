@@ -9,6 +9,7 @@ router = DefaultRouter()
 router.register('livenews', views.livenewsViewSet)
 router.register('hotnews', views.hotnewsViewSet)
 router.register('maininfo', views.mainnewsViewSet)
+router.register('category', views.cateViewSet)
 urlpatterns = [
     path('update', views.update, name='update'),
     path('wordcloud/<str:iname>', views.showcloudimage, name='wordcloud'),
