@@ -3,6 +3,7 @@ import jieba
 from PIL import Image
 import numpy as np
 from wordcloud import WordCloud
+from ..models import *
 
 
 def generate_wordcloud(text, iname):
@@ -26,4 +27,23 @@ def generate_wordcloud(text, iname):
     wc.generate(seg_list)
 
     # 生成的词云图像保存到本地
-    wc.to_file(path.join(d, "images//"+iname+".png"))
+    wc.to_file(path.join(d, "images//" + iname + ".png"))
+
+
+def generate_infocloud():
+    acloudtext = ''
+    for info in mainNews.objects.order_by("-pub_time")[:100]:
+        acloudtext += ' ' + info.title
+    generate_wordcloud(acloudtext, 'info')
+    for cate in category.objects.all():
+        cloudtext = ""
+        for info in mainNews.objects.filter(cate=cate).order_by("-pub_time")[:100]:
+            cloudtext += ' ' + info.title
+        generate_wordcloud(cloudtext, 'info_' + str(cate.id))
+
+
+def generate_livecloud():
+    cloudtext = ''
+    for info in liveNews.objects.order_by("-pub_time")[:100]:
+        cloudtext += ' ' + info.news_title + ' ' + info.news_content
+    generate_wordcloud(cloudtext, 'live')

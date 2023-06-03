@@ -26,7 +26,7 @@ def browse():
             hot.src = 'weibo'
             hot.rank = item.text
             hot.title = atag.text
-            cloudtext += '' + atag.text
+            cloudtext += ' ' + atag.text
             hot.link = atag.get_attribute('href')
             hot.hot = re.search(r'\d+', spantag.text).group()
             hot.save()
@@ -43,7 +43,7 @@ def zhihu():
         hot.rank = index
         title = item['target']['titleArea']['text']
         hot.title = title
-        cloudtext += '' + title
+        cloudtext += ' ' + title
         hot.src = "zhihu"
         r = re.search(r'\d+', item['target']['metricsArea']['text'])
         if r is None:
@@ -51,6 +51,22 @@ def zhihu():
         else:
             hot.hot = r.group() + '0000'
         hot.link = item['target']['link']['url']
+        hot.save()
+
+
+def sogou():
+    global cloudtext
+    hot_data = json.loads(crawl('https://go.ie.sogou.com/hot_ranks'))
+    for item in hot_data["data"]:
+        data = item['attributes']
+        hot = hotNews()
+        hot.src = "sogou"
+        title = data["title"]
+        cloudtext += ' ' + title
+        hot.title = title
+        hot.link = "https://www.sogou.com/sie?query=" + title
+        hot.hot = data["num"]
+        hot.rank = data["rank"]
         hot.save()
 
 
@@ -63,7 +79,7 @@ def baidu():
         hot.src = "baidu"
         hot.hot = (item.find(attrs={"class": "hot-index_1Bl1a"}).get_text())
         title = (item.find(attrs={"class": "c-single-text-ellipsis"}).get_text())
-        cloudtext += '' + title
+        cloudtext += ' ' + title
         hot.title = title
         hot.link = (item.find('a').get('href'))
         hot.save()
@@ -82,4 +98,5 @@ def gethot():
     browse()
     zhihu()
     baidu()
+    sogou()
     generate_wordcloud(cloudtext, 'hot')

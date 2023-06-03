@@ -12,6 +12,7 @@ router.register('maininfo', views.mainnewsViewSet)
 router.register('category', views.cateViewSet)
 urlpatterns = [
     path('update', views.update, name='update'),
+    path('get/<str:content>', views.get, name='get'),
     path('wordcloud/<str:iname>', views.showcloudimage, name='wordcloud'),
     path('', include(router.urls))
     # path('get/<str:category>', views.getinfo, name='get')

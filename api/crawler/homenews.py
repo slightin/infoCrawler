@@ -8,21 +8,20 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from ..models import mainNews, category
 from . import crawl, driver_path
+from django.db import IntegrityError
 
 krblocklist = []
 krurl = 'https://36kr.com'
 
 
 def crawl_netease(url, imageurl, cate):
-    lasttime = mainNews.objects.order_by('-pub_time')[0].pub_time.replace(tzinfo=None)
     soup = BeautifulSoup(crawl(url), 'html.parser')
     try:
         timeinfo = soup.find(attrs={'class': 'post_info'}).get_text()
         time = re.search(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}', timeinfo).group()
-        pubtime = datetime.datetime.strptime(time, '%Y-%m-%d %H:%M')
-        if pubtime <= lasttime:
-            return True
-        print(soup)
+        # pubtime = datetime.datetime.strptime(time, '%Y-%m-%d %H:%M')
+        # if pubtime <= lasttime:
+        #     return True
         info = mainNews()
         info.imageurl = imageurl
         info.title = soup.find(attrs={'class': 'post_title'}).get_text()
@@ -35,9 +34,11 @@ def crawl_netease(url, imageurl, cate):
         except:
             info.cate = category.objects.create(name=cate)
         info.save()
-    except:
-        return True
-    return False
+    except IntegrityError as ie:
+        print("数据库插入错误")
+        print(ie)
+    except Exception as e:
+        print(e)
 
 
 def browse():
@@ -55,8 +56,7 @@ def browse():
                                          '.newsdata_item:nth-of-type(' + str(index + 1) + ') .na_pic'):
             aurl = item.get_attribute('href')
             iurl = item.find_element(By.TAG_NAME, 'img').get_attribute('src')
-            if crawl_netease(aurl, iurl, nav.text) is True:
-                break
+            crawl_netease(aurl, iurl, nav.text)
 
     # 36kr
     # driver.get(krurl + '/information/shuzihua/')

@@ -1,6 +1,6 @@
 import json
 
-from django.core import serializers
+from django.core.serializers import serialize
 from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render
 from django_filters import rest_framework
@@ -10,7 +10,24 @@ from .serializers import *
 from .filters import *
 from .crawler import livenews, hotnews, homenews
 from .models import *
+from .cloud import *
 from os import path
+
+
+def get(request, content):
+    if content == "carousel":
+        carousel = mainNews.objects.exclude(bigimage="").order_by("-pub_time")[:5]
+        data = []
+        for item in carousel:
+            dic = {}
+            dic["id"] = item.id
+            dic["title"] = item.title
+            dic["iurl"] = item.bigimage
+            data.append(dic)
+        # data = {'list': json.loads(serialize("json", carousel))}
+        return HttpResponse(json.dumps(data, ensure_ascii=False))
+    else:
+        raise Http404
 
 
 @csrf_exempt
@@ -22,6 +39,11 @@ def update(request):
         hotnews.gethot()
     elif category == 'maininfo':
         homenews.browse()
+
+    elif category == 'infocloud':
+        generate_infocloud()
+    elif category == 'livecloud':
+        generate_livecloud()
     else:
         raise Http404
     return HttpResponse("sucess")
@@ -52,10 +74,12 @@ class hotnewsViewSet(ModelViewSet):
     filterset_class = hotnewsFilter
     pagination_class = None
 
+
 class mainnewsViewSet(ModelViewSet):
     queryset = mainNews.objects.all().order_by('-pub_time')
     serializer_class = mainnewsSerializer
     filterset_class = mainnewsFilter
+
 
 class cateViewSet(ModelViewSet):
     queryset = category.objects.all().order_by('id')

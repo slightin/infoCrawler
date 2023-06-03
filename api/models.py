@@ -5,7 +5,7 @@ from django.utils import timezone
 
 
 class liveNews(models.Model):
-    news_title = models.CharField(max_length=200)
+    news_title = models.CharField(max_length=200, unique=True)
     pub_time = models.DateTimeField('date published', default=timezone.now)
     news_content = models.TextField()
     link = models.CharField(max_length=200, default='')
@@ -27,7 +27,7 @@ class hotNews(models.Model):
 
 
 class mainNews(models.Model):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, unique=True)
     content = models.TextField()
     imageurl = models.URLField()
     pub_time = models.DateTimeField(default=timezone.now)

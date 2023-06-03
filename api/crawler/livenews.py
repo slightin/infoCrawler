@@ -9,7 +9,6 @@ baseurl = "https://www.36kr.com"
 murl = "https://m.36kr.com"
 def lCrawl():
     lasttime=liveNews.objects.order_by('-pub_time')[0].pub_time.replace(tzinfo=None)
-    # print(lasttime)
     content = crawl(baseurl + "/newsflashes/catalog/0")
     soup = BeautifulSoup(content, "html.parser")
     for element in soup.find_all(name="a", attrs={"class": "item-title"}):
