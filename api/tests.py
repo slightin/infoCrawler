@@ -7,7 +7,6 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.test import TestCase
 from .crawler import crawl, driver_path
-from .crawler.livenews import baseurl, murl
 from .models import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -52,7 +51,7 @@ class CrawlerTests(TestCase):
         #     print(em.find(attrs={"class": "HotList-itemTitle"}).get_text())
         #     # print(em.get('data-za-extra-module'))
 
-    def testlivenews_pc(self):
+    def test36krnews_pc(self):
         content = crawl(baseurl + "/newsflashes/catalog/0")
         soup = BeautifulSoup(content, "html.parser")
         for element in soup.find_all(name="a", attrs={"class": "item-title"}):
@@ -69,7 +68,7 @@ class CrawlerTests(TestCase):
             # print(news.news_title+news.news_content)
             news.save()
 
-    def testlivenews_m(self):
+    def test36krnews_m(self):
         lasttime = liveNews.objects.order_by('-pub_time')[0].pub_time.replace(tzinfo=None)
         content = crawl(baseurl + "/newsflashes/catalog/0")
         soup = BeautifulSoup(content, "html.parser")
@@ -91,6 +90,17 @@ class CrawlerTests(TestCase):
             #     news.link = linktag.get('href')
             # # print(news.news_title+news.news_content)
             # news.save()
+
+    def testjiemian(self):
+        content = crawl("https://www.jiemian.com/lists/1325kb.html")
+        soup = BeautifulSoup(content, "html.parser")
+        date = datetime.datetime.now().strftime("%Y-%m-%d ")
+        for item in soup.find_all(attrs={"class": "columns-right-center__newsflash-item"}):
+            print(item.get('data-time'))
+            print(item.find(attrs={"class": "logStore"}).get_text())
+            print(item.find(attrs={"class": "logStore"}).get('href'))
+            print(item.find(attrs={"class": "columns-right-center__newsflash-content__summary"}).get_text())
+
 
     def testlinktime(self):
         content = crawl("https://m.36kr.com/newsflashes/2214987967821185")
@@ -137,7 +147,8 @@ class testmainnews(TestCase):
             ActionChains(driver).move_to_element(nav).perform()
             time.sleep(0.5)  # 等待hover事件触发
             print(driver.find_elements(By.CSS_SELECTOR,
-                                           '.newsdata_item:nth-of-type(' + str(index + 1) + ') .na_pic')[0].get_attribute('href'))
+                                       '.newsdata_item:nth-of-type(' + str(index + 1) + ') .na_pic')[0].get_attribute(
+                'href'))
             # for item in driver.find_elements(By.CSS_SELECTOR, '.current .na_pic'):
             #     print(item.get_attribute('href'))
             #     print(item.find_element(By.TAG_NAME, 'img').get_attribute('src'))
@@ -158,13 +169,28 @@ class testmainnews(TestCase):
         time.sleep(3)
 
     def testkr(self):
+        driver = webdriver.Edge(driver_path)
+        driver.implicitly_wait(10)
 
-        soup = BeautifulSoup(crawl('https://36kr.com/motif/1846745018370696'), 'html.parser')
-        for item in soup.find_all(attrs={"class": "article-item-pic"}):
-            print(item)
-            # print(item.find(name='img').get('src'))
-            print(item.get('href'))
-            # infosoup = BeautifulSoup(crawl(baseurl + item.get('href')), 'html.parser')
+        # 36kr
+        krurl = 'https://36kr.com'
+        driver.get(krurl + '/information/shuzihua/')
+        for item in driver.find_elements(By.CLASS_NAME, "tab-item"):
+            item.click()
+            driver.find_element(By.CLASS_NAME, 'more-btn-block').click()
+            # print(atag.get_attribute('href'))
+            # atag.click()
+            driver.switch_to.window(driver.window_handles[1])
+            print(driver.current_url + driver.title)
+            driver.close()
+            driver.switch_to.window(driver.window_handles[0])
+
+        # soup = BeautifulSoup(crawl('https://36kr.com/motif/1846745018370696'), 'html.parser')
+        # for item in soup.find_all(attrs={"class": "article-item-pic"}):
+        #     print(item)
+        #     # print(item.find(name='img').get('src'))
+        #     print(item.get('href'))
+        #     # infosoup = BeautifulSoup(crawl(baseurl + item.get('href')), 'html.parser')
 
     def testnetease(self):
         soup = BeautifulSoup(crawl('https://www.163.com/dy/article/I47G7AS90514BQ68.html'), 'html.parser')
@@ -184,5 +210,3 @@ class WordcloudTests(TestCase):
 
     def testcloud(self):
         generate_wordcloud('在网上找到一张白色背景的图片下载到当前文件夹，作为词云的背景图（若不指定图片，则默认生成矩形词云）')
-
-

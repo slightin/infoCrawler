@@ -33,10 +33,12 @@ dependencies:
   - win_inet_pton=1.1.0=py39haa95532_0
   - wincertstore=0.2=py39haa95532_2
   - pip:
+      - apscheduler==3.10.1
       - async-generator==1.10
       - attrs==23.1.0
       - contourpy==1.0.7
       - cycler==0.11.0
+      - django-apscheduler==0.6.2
       - django-filter==23.1
       - djangorestframework==3.14.0
       - exceptiongroup==1.1.1
@@ -59,6 +61,7 @@ dependencies:
       - sortedcontainers==2.4.0
       - trio==0.22.0
       - trio-websocket==0.10.2
+      - tzlocal==5.0.1
       - wordcloud==1.9.1.1
       - wsproto==1.2.0
       - zipp==3.15.0

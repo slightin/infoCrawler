@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django_filters',
+    'django_apscheduler',
     'api.apps.ApiConfig',
 ]
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:5173']

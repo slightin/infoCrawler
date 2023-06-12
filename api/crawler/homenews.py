@@ -35,7 +35,7 @@ def crawl_netease(url, imageurl, cate):
             info.cate = category.objects.create(name=cate)
         info.save()
     except IntegrityError as ie:
-        print("数据库插入错误")
+        print("资讯已存在")
         print(ie)
     except Exception as e:
         print(e)
@@ -59,10 +59,17 @@ def browse():
             crawl_netease(aurl, iurl, nav.text)
 
     # 36kr
+    # krurl = 'https://36kr.com'
     # driver.get(krurl + '/information/shuzihua/')
     # for item in driver.find_elements(By.CLASS_NAME, "tab-item"):
     #     item.click()
-    #     krblocklist.append(driver.find_element(By.CLASS_NAME, 'more-btn-block'))
+    #     driver.find_element(By.CLASS_NAME, 'more-btn-block').click()
+    #     # print(atag.get_attribute('href'))
+    #     # atag.click()
+    #     driver.switch_to.window(driver.window_handles[1])
+    #     print(driver.current_url + driver.title)
+    #     driver.close()
+    #     driver.switch_to.window(driver.window_handles[0])
 
 
 # def kr():

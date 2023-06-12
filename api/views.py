@@ -1,5 +1,4 @@
 import json
-
 from django.core.serializers import serialize
 from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render
@@ -12,6 +11,36 @@ from .crawler import livenews, hotnews, homenews
 from .models import *
 from .cloud import *
 from os import path
+from apscheduler.schedulers.background import BackgroundScheduler
+from django_apscheduler.jobstores import DjangoJobStore, register_job
+
+scheduler = BackgroundScheduler()
+scheduler.add_jobstore(DjangoJobStore(), "default")
+
+
+@register_job(scheduler, "cron", minute='15,45', id='live', replace_existing=True)
+def crawlerLive():
+    livenews.lCrawl()
+    generate_livecloud()
+    print(datetime.datetime.now().strftime('%Y-%m-%d  %H:%M:%S'))
+    print("live")
+
+
+@register_job(scheduler, "cron", minute='*/10', id='hot', replace_existing=True)
+def crawlerHot():
+    hotnews.gethot()
+    print(datetime.datetime.now().strftime('%Y-%m-%d   %H:%M:%S')+'  hot')
+
+
+@register_job(scheduler, "cron", minute='5', id='main', replace_existing=True)
+def crawlerMain():
+    homenews.browse()
+    generate_infocloud()
+    print(datetime.datetime.now().strftime('%Y-%m-%d  %H:%M:%S'))
+    print("main")
+
+
+# scheduler.start()
 
 
 def get(request, content):
